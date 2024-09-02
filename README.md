@@ -54,3 +54,9 @@ Build ocsf-schema-rs
 cd ocsf-schema-rs
 cargo build
 ```
+
+## Compatibility
+
+| ocsf-schema-rs | OCSF  |
+|----------------|-------|
+| 0.1.0          | 1.3.0 |
