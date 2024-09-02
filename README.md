@@ -4,7 +4,11 @@ Unofficial OCSF data types for Rust based on OCSF JSON Schema.
 
 ## Getting started
 
-TODO
+Install with:
+
+```
+cargo add ocsf-schema-rs
+```
 
 ### Usage
 
