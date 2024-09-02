@@ -1,5 +1,8 @@
 # OCSF Schema
 
+[![Crates.io Version](https://img.shields.io/crates/v/ocsf-schema-rs)
+](https://crates.io/crates/ocsf-schema-rs)
+
 Unofficial OCSF data types for Rust based on OCSF JSON Schema.
 
 ## Getting started
