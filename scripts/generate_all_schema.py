@@ -1,6 +1,11 @@
 import json
 import os
-import pathlib
+import logging
+import sys
+from pathlib import Path
+
+BASE_DIR = "./data"
+OUTPUT_DIR = "./data"
 
 
 def remove_titles(v):
@@ -14,43 +19,35 @@ def remove_titles(v):
             remove_titles(child)
 
 
-defs = {}
+def generate_all_schema():
+    defs = {}
 
-OBJECTS_BASE_DIR = "./data/objects"
-fnames = os.listdir(OBJECTS_BASE_DIR)
-for fname in fnames:
-    if fname.endswith(".json"):
-        def_name = fname.split(".")[0]
-        with open(pathlib.Path(OBJECTS_BASE_DIR).joinpath(fname), "r") as f:
-            schema = json.load(f)
-            # Remove JSON Schema title to avoid name conflicts in typify
-            remove_titles(schema)
-            if "$defs" in schema:
-                del schema["$defs"]
-            defs[def_name] = schema
+    for type in ["objects", "classes"]:
+        type_dir = Path(BASE_DIR).joinpath(type)
+        fnames = os.listdir(type_dir)
+        for fname in fnames:
+            if fname.endswith(".json"):
+                def_name = fname.split(".")[0]
+                logging.info(f"Processing {def_name}...")
+                with open(Path(type_dir).joinpath(fname), "r") as f:
+                    schema = json.load(f)
+                    # Remove JSON Schema title to avoid name conflicts in typify
+                    remove_titles(schema)
+                    if "$defs" in schema:
+                        del schema["$defs"]
+                    defs[def_name] = schema
 
-CLASSES_BASE_DIR = "./data/classes"
-fnames = os.listdir(CLASSES_BASE_DIR)
-for fname in fnames:
-    if fname.endswith(".json"):
-        def_name = fname.split(".")[0]
-        with open(pathlib.Path(CLASSES_BASE_DIR).joinpath(fname), "r") as f:
-            schema = json.load(f)
-            # Remove JSON Schema title to avoid name conflicts in typify
-            remove_titles(schema)
-            if "$defs" in schema:
-                del schema["$defs"]
-            defs[def_name] = schema
+    all_schema = {
+        "$defs": defs,
+    }
+
+    output_path = Path(OUTPUT_DIR).joinpath("all.json")
+    with open(output_path, "w") as f:
+        json.dump(all_schema, f)
+    logging.info(f"Wrote to {output_path}.")
 
 
-all_schema = {
-    "$defs": defs,
-    "allOf": [
-        {
-            "$ref": f"#/$defs/{k}"
-        } for k in defs.keys()
-    ]
-}
-
-with open("./data/all.json", "w") as f:
-    json.dump(all_schema, f)
+if __name__ == "__main__":
+    logging.basicConfig(stream=sys.stdout, level=logging.INFO)
+    generate_all_schema()
+    logging.info("Done!")
