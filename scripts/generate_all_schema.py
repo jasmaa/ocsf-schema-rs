@@ -5,7 +5,7 @@ import sys
 from pathlib import Path
 
 BASE_DIR = "./data"
-OUTPUT_DIR = "./data"
+OUTPUT_DIR = "./ocsf-schema-rs"
 
 
 def remove_titles(v):
@@ -42,6 +42,7 @@ def generate_all_schema():
     }
 
     output_path = Path(OUTPUT_DIR).joinpath("all.json")
+    output_path.parent.mkdir(parents=True, exist_ok=True)
     with open(output_path, "w") as f:
         json.dump(all_schema, f)
     logging.info(f"Wrote to {output_path}.")
